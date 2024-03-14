@@ -1,35 +1,40 @@
 import { useEffect, useState } from "react";
 
-export default function useFetch(url) {
-  const [loadedMeals, setLoadedMeals] = useState([]);
+export default function useFetch(url, config) {
+  const [data, setData] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState();
 
-  useEffect(() => {
-    
-    const controller = new AbortController();
 
-    async function fetchMeals() {
-      setIsFetching(true);
-      try {
-        const response = await fetch(url, {signal: controller.signal});
-        if (!response.ok) {
-          setIsFetching(false);
-          setError("Error: Could Not Fetch Data");
-        }
-        const data = await response.json();
+  const controller = new AbortController();
+
+  async function fetchData(configuration) {
+    setIsFetching(true);
+
+    try {
+      const response = await fetch(url, {
+        signal: controller.signal,
+        ...configuration,
+      });
+      if (!response.ok) {
         setIsFetching(false);
-        setLoadedMeals(data);
-      } catch (error) {
-        setIsFetching(false);
-        setError(error);
+        throw new Error(response.statusText);
       }
+      const data = await response.json();
+      console.log(data);
+      setIsFetching(false);
+      setData(data);
+    } catch (error) {
+      setIsFetching(false);
+      setError(error);
     }
-    fetchMeals();
-    return () => {
-      controller.abort();
-    }
-  }, []);
+  }
 
-  return { loadedMeals, setLoadedMeals, isFetching, error };
+  useEffect(() => {
+    if (!config) {
+      fetchData();
+    }
+  }, [config]);
+
+  return { data, isFetching, error, fetchData };
 }
