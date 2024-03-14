@@ -5,6 +5,7 @@ export const CartContext = createContext({
   items: [],
   addItem: (item) => {},
   removeItem: (id) => {},
+  removeAll: () => {},
 });
 
 function cartReducer(state, action) {
@@ -44,6 +45,8 @@ function cartReducer(state, action) {
         updatedItemsRemove[existingCartItemIndexRemove] = updatedItemRemove;
       }
       return { ...state, items: updatedItemsRemove };
+    case 'REMOVEALL':
+      return []
     default:
       return state;
   }
@@ -59,11 +62,15 @@ function CartContextProvider({ children }) {
   const handleRemoveItem = (id) => {
     dispatchCartAction({type: 'REMOVE_ITEM', id})
   }
+  const removeAll = () => {
+    dispatchCartAction({type: 'REMOVEALL'})
+  }
 
   const cartContextValue = {
     items: cart.items,
     addItem: handleAddItem,
     removeItem: handleRemoveItem,
+    removeAll: removeAll,
   };
   return (
     <CartContext.Provider value={cartContextValue}>

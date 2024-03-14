@@ -8,7 +8,7 @@ import Button from "./UI/Button";
 import useFetch from "../hooks/useFetch";
 
 function Checkout() {
-  const { items } = useContext(CartContext);
+  const { items, removeAll } = useContext(CartContext);
   const { progress, hideCheckout } = useContext(UserContext);
   const {data, isFetching, error, fetchData} = useFetch('http://localhost:3000/orders', 'POST');
   const [fields, setFields] = useState({
@@ -19,9 +19,9 @@ function Checkout() {
     city: "",
   });
 
-  const cartTotal = items.reduce((totalAmount, item) => {
+  const cartTotal = items ? items.reduce((totalAmount, item) => {
     return totalAmount + item.price * item.quantity;
-  }, 0);
+  }, 0) : 0;
 
   const handleClose = () => {
     hideCheckout();
@@ -40,7 +40,11 @@ function Checkout() {
         "Content-Type": "application/json",
       },
     };
-    fetchData(config).then(response => console.log(response));
+    fetchData(config)
+      .then(response => {
+        removeAll();
+        hideCheckout();
+      });
     
   };
   const handleChange = (value, type) => {

@@ -6,10 +6,10 @@ import { UserContext } from "../context/UserProgressContext";
 function Header() {
   const {items} = useContext(CartContext);
   const {showCart} = useContext(UserContext)
-
-  const totalCartItems = items.reduce((totalNumberOfItems, item) => {
+  
+  const totalCartItems = items ? items.reduce((totalNumberOfItems, item) => {
     return totalNumberOfItems + item.quantity
-  }, 0);
+  }, 0) : 0;
 
   const handleShowCart = () => {
     showCart();

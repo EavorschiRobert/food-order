@@ -10,9 +10,9 @@ function Cart() {
   const { items } = useContext(CartContext);
   const { progress, hideCart, showCheckout} = useContext(UserContext);
 
-  const cartTotal = items.reduce((totalAmount, item) => {
-    return totalAmount + item.price * item.quantity;
-  }, 0);
+  const cartTotal = items ? items.reduce((totalNumberOfItems, item) => {
+    return totalNumberOfItems + item.quantity
+  }, 0) : 0;
 
   const handleCloseCart = () => {
     hideCart();
@@ -33,7 +33,7 @@ function Cart() {
         <Button textOnly onClick={handleCloseCart}>
           Close
         </Button>
-        {items.length > 0 && (
+        {items && items.length > 0 && (
           <Button onClick={handleCheckout}>Go to Checkout</Button>
         )}
       </p>
